@@ -34,9 +34,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body
-        className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${anton.variable} ${oswald.variable}`}
+        className={`font-sans bg-[#0a0a0b] ${GeistSans.variable} ${GeistMono.variable} ${anton.variable} ${oswald.variable}`}
       >
         <Suspense fallback={null}>
           {children}

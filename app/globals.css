@@ -127,7 +127,22 @@
   }
 }
 
-/* B. Good Spouting — overhaul utilities */
+/* ================================================================== */
+/* B. Good Spouting — bright teal + lime "dripping water" theme        */
+/* ================================================================== */
+
+:root {
+  --bgs-teal: #14a8ac;
+  --bgs-teal-deep: #0c7b80;
+  --bgs-teal-darker: #08585c;
+  --bgs-mint: #e9fbfb;
+  --bgs-lime: #8cc63f;
+  --bgs-lime-bright: #a4e030;
+  --bgs-lime-deep: #5a9216;
+  --bgs-ink: #073b3e;
+  --bgs-gold: #facc15;
+}
+
 .font-display {
   font-family: var(--font-anton), system-ui, sans-serif;
   letter-spacing: 0.01em;
@@ -136,7 +151,16 @@
   font-family: var(--font-oswald), system-ui, sans-serif;
 }
 
-/* Gold gradient fill for highlighted display text */
+/* Lime gradient fill for highlighted display text on dark/teal backgrounds */
+.text-lime-gradient {
+  background: linear-gradient(180deg, #c6f56a 0%, #a4e030 45%, #6fb31f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Gold gradient (primary brand highlight for display text) */
 .text-gold-gradient {
   background: linear-gradient(180deg, #fde047 0%, #facc15 45%, #d39d00 100%);
   -webkit-background-clip: text;
@@ -147,8 +171,8 @@
 
 /* Subtle dark diagonal texture used behind dark sections */
 .bg-grid-dark {
-  background-image: linear-gradient(135deg, rgba(250, 204, 21, 0.04) 0%, transparent 45%),
-    linear-gradient(315deg, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
+  background-image: linear-gradient(135deg, rgba(250, 204, 21, 0.05) 0%, transparent 45%),
+    linear-gradient(315deg, rgba(255, 255, 255, 0.025) 0%, transparent 40%);
 }
 
 /* Thin gold rule */
@@ -159,39 +183,94 @@
   background: linear-gradient(90deg, #facc15, #d39d00);
 }
 
-/* Added custom swoosh decorative elements */
-.swoosh-decoration {
+/* Primary lime CTA button look */
+.btn-lime {
+  background: linear-gradient(180deg, var(--bgs-lime-bright) 0%, var(--bgs-lime) 55%, var(--bgs-lime-deep) 100%);
+  color: var(--bgs-ink);
+  box-shadow: 0 6px 0 0 #4a7d12, 0 10px 18px -8px rgba(0, 0, 0, 0.45);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+.btn-lime:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+.btn-lime:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 0 #4a7d12, 0 5px 10px -6px rgba(0, 0, 0, 0.45);
+}
+
+/* Subtle bubble texture behind teal sections */
+.bg-bubbles {
+  background-image: radial-gradient(circle at 12% 22%, rgba(255, 255, 255, 0.08) 0 8px, transparent 9px),
+    radial-gradient(circle at 78% 14%, rgba(255, 255, 255, 0.06) 0 12px, transparent 13px),
+    radial-gradient(circle at 64% 70%, rgba(255, 255, 255, 0.05) 0 16px, transparent 17px),
+    radial-gradient(circle at 30% 82%, rgba(255, 255, 255, 0.06) 0 10px, transparent 11px);
+}
+
+/* Thin lime rule */
+.rule-lime {
+  height: 4px;
+  width: 5rem;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--bgs-lime-bright), var(--bgs-lime-deep));
+}
+
+/* ------------------------------------------------------------------ */
+/* Dripping-water section divider                                      */
+/* ------------------------------------------------------------------ */
+.water-drip {
   position: relative;
+  width: 100%;
+  line-height: 0;
+  pointer-events: none;
   overflow: hidden;
 }
-
-.swoosh-decoration::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -10%;
-  width: 120%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent 40%, oklch(0.12 0 0) 50%, transparent 60%);
-  transform: rotate(-15deg);
-  opacity: 0.05;
-  pointer-events: none;
+.water-drip svg {
+  display: block;
+  width: 100%;
+  height: 70px;
+}
+@media (min-width: 640px) {
+  .water-drip svg {
+    height: 120px;
+  }
+}
+@media (min-width: 1024px) {
+  .water-drip svg {
+    height: 150px;
+  }
 }
 
-.swoosh-decoration-yellow {
-  position: relative;
-  overflow: hidden;
-}
-
-.swoosh-decoration-yellow::after {
-  content: "";
+/* Detached droplets that fall from the drips onto the next section */
+.water-drip .droplet {
   position: absolute;
-  bottom: -30%;
-  right: -10%;
-  width: 80%;
-  height: 150%;
-  background: linear-gradient(-30deg, transparent 30%, oklch(0.92 0.18 90) 50%, transparent 70%);
-  transform: rotate(25deg);
-  opacity: 0.08;
-  pointer-events: none;
+  top: 58%;
+  width: 9px;
+  height: 13px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+  opacity: 0;
+  animation: drip-fall 3.4s ease-in infinite;
+}
+@keyframes drip-fall {
+  0% {
+    transform: translateY(-4px) scale(0.6);
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(40px) scale(1);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .water-drip .droplet {
+    animation: none;
+    opacity: 0;
+  }
 }

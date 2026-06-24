@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -14,7 +14,6 @@ import {
   X,
   ChevronDown,
   ArrowRight,
-  Check,
   Star,
   ShieldCheck,
   Droplets,
@@ -27,10 +26,10 @@ import {
   BadgeCheck,
   MessageCircle,
   Building2,
+  CheckCircle2,
   Facebook,
   Instagram,
   Youtube,
-  Send,
 } from "lucide-react"
 
 /* ------------------------------------------------------------------ */
@@ -222,28 +221,138 @@ function SectionEyebrow({ children }: { children: React.ReactNode }) {
   )
 }
 
+const INPUT_CLASS =
+  "w-full rounded-md border border-zinc-700 bg-zinc-900/80 px-4 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400"
+
+type EstimateFormState = {
+  fullName: string
+  phone: string
+  email: string
+  address: string
+  service: string
+  message: string
+}
+
+/* The dark "Get a Free Gutter Estimate" card — shared by the hero and the contact section. */
+function EstimateForm({
+  form,
+  setForm,
+  onSubmit,
+  className = "",
+}: {
+  form: EstimateFormState
+  setForm: (f: EstimateFormState) => void
+  onSubmit: (e: React.FormEvent) => void
+  className?: string
+}) {
+  return (
+    <div
+      className={`rounded-3xl border border-zinc-700/70 bg-zinc-950/90 p-6 shadow-2xl backdrop-blur sm:p-8 ${className}`}
+    >
+      <h3 className="font-display text-3xl leading-none sm:text-4xl">
+        GET A FREE
+        <br />
+        <span className="text-gold-gradient">GUTTER ESTIMATE</span>
+      </h3>
+      <form onSubmit={onSubmit} className="mt-6 space-y-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <input
+            required
+            placeholder="Full Name"
+            className={INPUT_CLASS}
+            value={form.fullName}
+            onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+          />
+          <input
+            required
+            type="tel"
+            placeholder="Phone Number"
+            className={INPUT_CLASS}
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
+        </div>
+        <input
+          required
+          type="email"
+          placeholder="Email Address"
+          className={INPUT_CLASS}
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
+        <input
+          placeholder="Street Address"
+          className={INPUT_CLASS}
+          value={form.address}
+          onChange={(e) => setForm({ ...form, address: e.target.value })}
+        />
+        <select
+          required
+          className={`${INPUT_CLASS} ${form.service ? "text-white" : "text-zinc-500"}`}
+          value={form.service}
+          onChange={(e) => setForm({ ...form, service: e.target.value })}
+        >
+          <option value="" disabled>
+            Service Needed
+          </option>
+          {SERVICE_OPTIONS.map((s) => (
+            <option key={s} value={s} className="text-white">
+              {s}
+            </option>
+          ))}
+        </select>
+        <textarea
+          rows={4}
+          placeholder="Message"
+          className={INPUT_CLASS}
+          value={form.message}
+          onChange={(e) => setForm({ ...form, message: e.target.value })}
+        />
+        <Button
+          type="submit"
+          className="w-full rounded-lg bg-yellow-400 py-6 font-condensed text-base font-bold uppercase tracking-[0.1em] text-black hover:bg-yellow-300"
+        >
+          Request My Estimate <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+        <p className="flex items-center justify-center gap-1.5 text-center text-xs text-zinc-400">
+          <CheckCircle2 className="h-4 w-4 text-yellow-400" /> Fast. Friendly. No obligation.
+        </p>
+      </form>
+    </div>
+  )
+}
+
 /* ------------------------------------------------------------------ */
 /* Page                                                                */
 /* ------------------------------------------------------------------ */
 
 export default function HomePage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
+    fullName: "",
     phone: "",
+    email: "",
+    address: "",
     service: "",
     message: "",
   })
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const subject = `Free Estimate Request${form.service ? ` — ${form.service}` : ""}`
     const body = [
-      `Name: ${form.firstName} ${form.lastName}`.trim(),
-      `Email: ${form.email}`,
+      `Name: ${form.fullName}`.trim(),
       `Phone: ${form.phone}`,
+      `Email: ${form.email}`,
+      `Street Address: ${form.address}`,
       `Service Needed: ${form.service || "Not specified"}`,
       "",
       form.message,
@@ -251,17 +360,30 @@ export default function HomePage() {
     window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
 
-  const inputClass =
-    "w-full rounded-md border border-zinc-700 bg-zinc-900/80 px-4 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:border-yellow-400 focus:outline-none focus:ring-1 focus:ring-yellow-400"
-
   return (
     <div id="top" className="min-h-screen bg-[#0a0a0b] text-white">
-      {/* ============================ Header ============================ */}
-      <header className="sticky top-0 z-50 border-b border-zinc-800 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/80">
+      {/* ===== Header: nav always visible; the bar background appears on scroll ===== */}
+      <header
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "border-b border-zinc-800 bg-black/95 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-black/80"
+            : "bg-transparent"
+        }`}
+      >
         <div className="container mx-auto px-4">
-          <div className="flex h-20 items-center justify-between gap-4">
+          <div
+            className={`flex items-center justify-between gap-4 transition-all duration-300 ${
+              scrolled ? "py-2" : "py-4"
+            }`}
+          >
             <a href="#top" className="flex shrink-0 items-center">
-              <img src="/bgood-logo.png" alt="B. Good Spouting" className="h-12 w-auto sm:h-14" />
+              <img
+                src="/bgood-logo.png"
+                alt="B. Good Spouting"
+                className={`w-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)] transition-all duration-300 ${
+                  scrolled ? "h-14" : "h-24 sm:h-36 lg:h-48"
+                }`}
+              />
             </a>
 
             <nav className="hidden items-center gap-7 lg:flex">
@@ -269,7 +391,7 @@ export default function HomePage() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="font-condensed text-sm font-medium uppercase tracking-wide text-zinc-200 transition-colors hover:text-yellow-400"
+                  className="font-condensed text-sm font-medium uppercase tracking-wide text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)] transition-colors hover:text-yellow-400"
                 >
                   {link.label}
                   {link.label === "Services" && <ChevronDown className="ml-1 inline h-3.5 w-3.5" />}
@@ -278,7 +400,10 @@ export default function HomePage() {
             </nav>
 
             <div className="hidden items-center gap-5 lg:flex">
-              <a href={PHONE_HREF} className="flex items-center gap-2 text-white transition-colors hover:text-yellow-400">
+              <a
+                href={PHONE_HREF}
+                className="flex items-center gap-2 text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)] transition-colors hover:text-yellow-400"
+              >
                 <PhoneCall className="h-5 w-5 text-yellow-400" />
                 <span className="font-condensed text-lg font-bold tracking-wide">{PHONE_DISPLAY}</span>
               </a>
@@ -293,16 +418,16 @@ export default function HomePage() {
             </div>
 
             <button
-              className="text-white lg:hidden"
+              className="text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)] lg:hidden"
               onClick={() => setIsMobileMenuOpen((v) => !v)}
               aria-label="Toggle menu"
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMobileMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
             </button>
           </div>
 
           {isMobileMenuOpen && (
-            <div className="border-t border-zinc-800 py-4 lg:hidden">
+            <div className="mb-3 rounded-lg border border-zinc-800 bg-black/95 p-4 backdrop-blur lg:hidden">
               <nav className="flex flex-col gap-1">
                 {NAV_LINKS.map((link) => (
                   <a
@@ -333,142 +458,67 @@ export default function HomePage() {
       </header>
 
       {/* ============================ Hero ============================ */}
-      <section className="relative overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url(/hero-gutter-background.jpg)" }}
+      <section className="relative overflow-hidden bg-[#0a0a0b]">
+        {/* The hero IS the image — the gold drips are built into its bottom edge */}
+        <img
+          src="/b-good-spouting-hero-image.png"
+          alt="Luxury stone home with copper gutters and downspouts installed by B. Good Spouting"
+          className="block w-full select-none"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-black/60" />
-        <div className="absolute inset-0 bg-grid-dark" />
+        {/* Legibility gradient over the dark left side */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/90 via-black/45 to-transparent" />
 
-        <div className="container relative z-10 mx-auto grid items-center gap-10 px-4 py-16 lg:grid-cols-[1.1fr_minmax(0,420px)] lg:py-24">
-          {/* Left: copy */}
-          <div>
-            <SectionEyebrow>Lancaster County, PA</SectionEyebrow>
-            <h1 className="font-display mt-4 text-5xl leading-[0.95] sm:text-6xl lg:text-7xl">
-              SEAMLESS GUTTERS,
-              <br />
-              DOWNSPOUTS &amp;
-              <br />
-              LEAF GUARDS <span className="text-gold-gradient">DONE RIGHT.</span>
-            </h1>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-zinc-300 sm:text-lg">
-              Be Good Spouting provides professional gutter installation, replacement, leaf guards, and downspouts to
-              protect your home from costly water damage.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button
-                asChild
-                size="lg"
-                className="rounded-md bg-yellow-400 px-7 font-condensed text-base font-bold uppercase tracking-wide text-black hover:bg-yellow-300"
-              >
-                <a href="#contact">
-                  Get Free Estimate <ArrowRight className="ml-2 h-5 w-5" />
-                </a>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="rounded-md border-2 border-zinc-600 bg-transparent px-7 font-condensed text-base font-bold uppercase tracking-wide text-white hover:border-yellow-400 hover:bg-yellow-400 hover:text-black"
-              >
-                <a href="#services">Our Services</a>
-              </Button>
-            </div>
-            <div className="mt-8 flex items-center gap-3 text-sm text-zinc-400">
-              <Stars className="h-4 w-4" />
-              <span>Trusted by Lancaster County homeowners · 25+ years experience</span>
-            </div>
-          </div>
-
-          {/* Right: estimate form */}
-          <div className="relative">
-            <div className="rounded-xl border border-zinc-800 bg-zinc-950/90 p-6 shadow-2xl backdrop-blur sm:p-7">
-              <div className="mb-5">
-                <p className="font-condensed text-xs font-semibold uppercase tracking-[0.2em] text-yellow-400">
-                  Get a Free
-                </p>
-                <h2 className="font-display text-3xl">GUTTER ESTIMATE</h2>
-              </div>
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    required
-                    placeholder="First Name"
-                    className={inputClass}
-                    value={form.firstName}
-                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-                  />
-                  <input
-                    required
-                    placeholder="Last Name"
-                    className={inputClass}
-                    value={form.lastName}
-                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                  />
-                </div>
-                <input
-                  required
-                  type="email"
-                  placeholder="Email Address"
-                  className={inputClass}
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                />
-                <input
-                  required
-                  type="tel"
-                  placeholder="Phone Number"
-                  className={inputClass}
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                />
-                <select
-                  required
-                  className={`${inputClass} ${form.service ? "text-white" : "text-zinc-500"}`}
-                  value={form.service}
-                  onChange={(e) => setForm({ ...form, service: e.target.value })}
-                >
-                  <option value="" disabled>
-                    Service Needed
-                  </option>
-                  {SERVICE_OPTIONS.map((s) => (
-                    <option key={s} value={s} className="text-white">
-                      {s}
-                    </option>
-                  ))}
-                </select>
-                <textarea
-                  rows={3}
-                  placeholder="Tell us about your project"
-                  className={inputClass}
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                />
+        {/* Headline only — keep the copper / gutter photo and the drips fully visible */}
+        <div className="relative z-10 px-4 pb-12 pt-8 lg:absolute lg:inset-0 lg:flex lg:items-center lg:p-0">
+          <div className="container mx-auto lg:px-4">
+            <div className="max-w-2xl lg:pb-[12%]">
+              <SectionEyebrow>Lancaster County, PA</SectionEyebrow>
+              <h1 className="font-display mt-4 text-4xl leading-[0.95] drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] sm:text-5xl lg:text-6xl">
+                SEAMLESS GUTTERS,
+                <br />
+                DOWNSPOUTS &amp;
+                <br />
+                LEAF GUARDS <span className="text-gold-gradient">DONE RIGHT.</span>
+              </h1>
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-zinc-300 sm:text-lg">
+                Be Good Spouting provides professional gutter installation, replacement, leaf guards, and downspouts to
+                protect your home from costly water damage.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button
-                  type="submit"
-                  className="w-full rounded-md bg-yellow-400 py-5 font-condensed text-base font-bold uppercase tracking-wide text-black hover:bg-yellow-300"
+                  asChild
+                  size="lg"
+                  className="rounded-md bg-yellow-400 px-7 font-condensed text-base font-bold uppercase tracking-wide text-black hover:bg-yellow-300"
                 >
-                  Request My Estimate <Send className="ml-2 h-4 w-4" />
+                  <a href="#contact">
+                    Get Free Estimate <ArrowRight className="ml-2 h-5 w-5" />
+                  </a>
                 </Button>
-                <p className="text-center text-xs text-zinc-500">Fast, friendly, no obligation.</p>
-              </form>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="rounded-md border-2 border-zinc-600 bg-transparent px-7 font-condensed text-base font-bold uppercase tracking-wide text-white hover:border-yellow-400 hover:bg-yellow-400 hover:text-black"
+                >
+                  <a href="#services">Our Services</a>
+                </Button>
+              </div>
+              <div className="mt-8 flex items-center gap-3 text-sm text-zinc-400">
+                <Stars className="h-4 w-4" />
+                <span>Trusted by Lancaster County homeowners · 25+ years experience</span>
+              </div>
             </div>
-            {/* Mascot peeking */}
-            <img
-              src="/bgood-mascot.png"
-              alt=""
-              aria-hidden="true"
-              className="pointer-events-none absolute -bottom-10 -left-16 hidden h-40 w-auto drop-shadow-2xl xl:block"
-            />
           </div>
         </div>
       </section>
 
       {/* ===================== Protect feature strip ===================== */}
-      <section className="border-y border-zinc-800 bg-zinc-950">
+      <section className="bg-[#141418]">
         <div className="container mx-auto grid items-center gap-0 px-0 lg:grid-cols-2">
-          <div className="h-64 w-full bg-cover bg-center lg:h-full lg:min-h-[420px]" style={{ backgroundImage: "url(/gallery/green-downspout.jpg)" }} />
+          <div
+            className="h-64 w-full bg-cover bg-center lg:h-full lg:min-h-[440px]"
+            style={{ backgroundImage: "url(/gallery/green-downspout.jpg)" }}
+          />
           <div className="px-4 py-12 lg:px-12 lg:py-16">
             <SectionEyebrow>Protect Your Home</SectionEyebrow>
             <h2 className="font-display mt-3 text-4xl leading-tight sm:text-5xl">
@@ -543,7 +593,7 @@ export default function HomePage() {
       </section>
 
       {/* ===================== Why homeowners choose ===================== */}
-      <section id="about" className="relative overflow-hidden border-y border-zinc-800 bg-zinc-950 py-14">
+      <section id="about" className="relative overflow-hidden bg-[#141418] py-16">
         <div className="absolute inset-0 bg-grid-dark" />
         <div className="container relative z-10 mx-auto px-4">
           <h2 className="font-display mb-10 text-center text-3xl sm:text-4xl">
@@ -584,8 +634,9 @@ export default function HomePage() {
                 </li>
               ))}
             </ul>
-            <p className="mt-6 text-sm text-zinc-500">…and surrounding communities within ~50 miles. Not sure if we
-              cover your area? Just ask.</p>
+            <p className="mt-6 text-sm text-zinc-500">
+              …and surrounding communities within ~50 miles. Not sure if we cover your area? Just ask.
+            </p>
           </div>
 
           {/* Stylized map */}
@@ -620,8 +671,9 @@ export default function HomePage() {
       </section>
 
       {/* ===================== Commercial & contractor ===================== */}
-      <section className="border-y border-zinc-800 bg-zinc-950 py-16 sm:py-20">
-        <div className="container mx-auto px-4">
+      <section className="relative overflow-hidden bg-[#141418] py-16 sm:py-20">
+        <div className="absolute inset-0 bg-grid-dark" />
+        <div className="container relative z-10 mx-auto px-4">
           <div className="mb-10 text-center">
             <h2 className="font-display text-4xl sm:text-5xl">
               COMMERCIAL &amp; <span className="text-gold-gradient">CONTRACTOR SERVICES</span>
@@ -656,7 +708,7 @@ export default function HomePage() {
       {/* ===================== CTA band ===================== */}
       <section className="relative overflow-hidden bg-yellow-400 text-black">
         <div className="container mx-auto flex flex-col items-center gap-6 px-4 py-10 sm:flex-row sm:py-12">
-          <img src="/bgood-mascot.png" alt="" aria-hidden="true" className="hidden h-40 w-auto sm:block" />
+          <img src="/spout-character-solo.png" alt="" aria-hidden="true" className="hidden h-40 w-auto sm:block" />
           <div className="flex-1 text-center sm:text-left">
             <h2 className="font-display text-4xl leading-none sm:text-5xl">NEED NEW GUTTERS? LET&apos;S MAKE IT EASY.</h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm font-medium text-black/80 sm:mx-0">
@@ -723,115 +775,75 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===================== Contact ===================== */}
-      <section id="contact" className="border-t border-zinc-800 bg-zinc-950 py-16 sm:py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid items-start gap-12 lg:grid-cols-2">
-            <div>
-              <SectionEyebrow>Get In Touch</SectionEyebrow>
-              <h2 className="font-display mt-3 text-4xl sm:text-5xl">
-                REQUEST YOUR <span className="text-gold-gradient">FREE ESTIMATE</span>
-              </h2>
-              <p className="mt-5 max-w-lg text-zinc-300">
-                Ready to protect your home with professional gutters? Reach out today and we&apos;ll get you a fast,
-                friendly, no-obligation estimate.
-              </p>
+      {/* ===================== Contact / Estimate ===================== */}
+      <section id="contact" className="relative overflow-hidden bg-[#0a0a0b] py-16 sm:py-24">
+        {/* Gutter photo backdrop */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-25"
+          style={{ backgroundImage: "url(/gallery/corner-gutters.jpg)" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-black/70" />
+        <div className="absolute inset-0 bg-grid-dark" />
 
-              <div className="mt-8 space-y-4">
-                <a href={PHONE_HREF} className="flex items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-900 p-4 transition-colors hover:border-yellow-400/60">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-md bg-yellow-400 text-black">
-                    <Phone className="h-6 w-6" />
-                  </span>
-                  <div>
-                    <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Call Us</p>
-                    <p className="font-condensed text-lg font-bold text-white">{PHONE_DISPLAY}</p>
-                  </div>
-                </a>
-                <a href={`mailto:${EMAIL}`} className="flex items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-900 p-4 transition-colors hover:border-yellow-400/60">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-md bg-yellow-400 text-black">
-                    <Mail className="h-6 w-6" />
-                  </span>
-                  <div>
-                    <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Email Us</p>
-                    <p className="font-condensed text-lg font-bold text-white">{EMAIL}</p>
-                  </div>
-                </a>
-                <div className="flex items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-900 p-4">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-md bg-yellow-400 text-black">
-                    <Clock className="h-6 w-6" />
-                  </span>
-                  <div>
-                    <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Hours</p>
-                    <p className="font-condensed text-lg font-bold text-white">Mon–Fri: 7AM–6PM</p>
-                  </div>
-                </div>
+        <div className="container relative z-10 mx-auto px-4">
+          <div className="mb-10 text-center">
+            <SectionEyebrow>Get In Touch</SectionEyebrow>
+            <h2 className="font-display mt-3 text-4xl sm:text-5xl">
+              REQUEST YOUR <span className="text-gold-gradient">FREE ESTIMATE</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-zinc-300">
+              Ready to protect your home with professional gutters? Send us a few details and we&apos;ll get right back
+              to you.
+            </p>
+          </div>
+
+          {/* Mascot + form card */}
+          <div className="relative mx-auto max-w-2xl">
+            {/* Mascot standing alongside the form (desktop) */}
+            <img
+              src="/spout-character-solo.png"
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none absolute -left-2 bottom-0 z-20 hidden h-[112%] -translate-x-[78%] drop-shadow-2xl lg:block"
+            />
+
+            <EstimateForm form={form} setForm={setForm} onSubmit={handleSubmit} className="relative z-10" />
+          </div>
+
+          {/* Contact info row */}
+          <div className="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
+            <a
+              href={PHONE_HREF}
+              className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/80 p-4 transition-colors hover:border-yellow-400/60"
+            >
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-yellow-400 text-black">
+                <Phone className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Call Us</p>
+                <p className="font-condensed text-base font-bold text-white">{PHONE_DISPLAY}</p>
               </div>
-            </div>
-
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 sm:p-8">
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    required
-                    placeholder="First Name"
-                    className={inputClass}
-                    value={form.firstName}
-                    onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-                  />
-                  <input
-                    required
-                    placeholder="Last Name"
-                    className={inputClass}
-                    value={form.lastName}
-                    onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                  />
-                </div>
-                <input
-                  required
-                  type="email"
-                  placeholder="Email Address"
-                  className={inputClass}
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                />
-                <input
-                  required
-                  type="tel"
-                  placeholder="Phone Number"
-                  className={inputClass}
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                />
-                <select
-                  required
-                  className={`${inputClass} ${form.service ? "text-white" : "text-zinc-500"}`}
-                  value={form.service}
-                  onChange={(e) => setForm({ ...form, service: e.target.value })}
-                >
-                  <option value="" disabled>
-                    Service Needed
-                  </option>
-                  {SERVICE_OPTIONS.map((s) => (
-                    <option key={s} value={s} className="text-white">
-                      {s}
-                    </option>
-                  ))}
-                </select>
-                <textarea
-                  rows={4}
-                  placeholder="Tell us about your project"
-                  className={inputClass}
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                />
-                <Button
-                  type="submit"
-                  className="w-full rounded-md bg-yellow-400 py-5 font-condensed text-base font-bold uppercase tracking-wide text-black hover:bg-yellow-300"
-                >
-                  Request My Estimate <Send className="ml-2 h-4 w-4" />
-                </Button>
-                <p className="text-center text-xs text-zinc-500">Fast, friendly, no obligation.</p>
-              </form>
+            </a>
+            <a
+              href={`mailto:${EMAIL}`}
+              className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/80 p-4 transition-colors hover:border-yellow-400/60"
+            >
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-yellow-400 text-black">
+                <Mail className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Email Us</p>
+                <p className="font-condensed text-sm font-bold text-white">{EMAIL}</p>
+              </div>
+            </a>
+            <div className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/80 p-4">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-yellow-400 text-black">
+                <Clock className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Hours</p>
+                <p className="font-condensed text-base font-bold text-white">Mon–Fri: 7AM–6PM</p>
+              </div>
             </div>
           </div>
         </div>
@@ -924,7 +936,10 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-zinc-800 pt-6 text-xs text-zinc-500 sm:flex-row">
-            <p>© {new Date().getFullYear()} B. Good Spouting. All rights reserved. Licensed &amp; insured in Pennsylvania.</p>
+            <p>
+              © {new Date().getFullYear()} B. Good Spouting. All rights reserved. Licensed &amp; insured in
+              Pennsylvania.
+            </p>
             <div className="flex gap-5">
               <a href="#" className="hover:text-yellow-400">
                 Privacy Policy
