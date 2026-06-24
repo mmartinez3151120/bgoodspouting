@@ -178,6 +178,10 @@ const PHONE_DISPLAY = "717-725-5147"
 const PHONE_HREF = "tel:+17177255147"
 const EMAIL = "johnny@bgoodspouting.com"
 
+const GOOGLE_RATING = "5.0"
+const GOOGLE_REVIEW_COUNT = 22
+const GOOGLE_REVIEWS_URL = "https://share.google/mGEwptudK0qXOuvkM"
+
 /* ------------------------------------------------------------------ */
 /* Small components                                                    */
 /* ------------------------------------------------------------------ */
@@ -503,8 +507,17 @@ export default function HomePage() {
                   <a href="#services">Our Services</a>
                 </Button>
               </div>
-              <div className="mt-8 flex items-center gap-3 text-sm text-zinc-400">
-                <Stars className="h-4 w-4" />
+              <div className="mt-8 flex flex-wrap items-center gap-3 text-sm text-zinc-400">
+                <a
+                  href={GOOGLE_REVIEWS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="See our 5-star Google reviews"
+                  className="inline-flex items-center gap-2 transition-opacity hover:opacity-80"
+                >
+                  <GoogleG className="h-5 w-5" />
+                  <Stars className="h-4 w-4" />
+                </a>
                 <span>Trusted by Lancaster County homeowners · 25+ years experience</span>
               </div>
             </div>
@@ -740,10 +753,19 @@ export default function HomePage() {
             <h2 className="font-display text-4xl sm:text-5xl">
               WHAT OUR <span className="text-gold-gradient">CUSTOMERS ARE SAYING</span>
             </h2>
-            <div className="mt-4 flex items-center justify-center gap-2 text-zinc-300">
-              <Stars className="h-5 w-5" />
-              <span className="font-condensed text-sm uppercase tracking-wide">5.0 rating on Google</span>
-            </div>
+            <a
+              href={GOOGLE_REVIEWS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2.5 rounded-full border border-zinc-700 bg-zinc-900/70 px-4 py-2 transition-colors hover:border-yellow-400/60"
+            >
+              <GoogleG className="h-5 w-5" />
+              <span className="font-condensed text-lg font-bold text-white">{GOOGLE_RATING}</span>
+              <Stars className="h-4 w-4" />
+              <span className="font-condensed text-sm uppercase tracking-wide text-zinc-300">
+                {GOOGLE_REVIEW_COUNT} Google Reviews
+              </span>
+            </a>
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -771,10 +793,13 @@ export default function HomePage() {
 
           <div className="mt-10 text-center">
             <Button
+              asChild
               variant="outline"
               className="rounded-md border-2 border-yellow-400 bg-transparent px-7 font-condensed font-bold uppercase tracking-wide text-yellow-400 hover:bg-yellow-400 hover:text-black"
             >
-              Read More Reviews
+              <a href={GOOGLE_REVIEWS_URL} target="_blank" rel="noopener noreferrer">
+                Read All {GOOGLE_REVIEW_COUNT} Reviews
+              </a>
             </Button>
           </div>
         </div>
