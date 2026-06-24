@@ -462,15 +462,15 @@ export default function HomePage() {
       </header>
 
       {/* ============================ Hero ============================ */}
-      <section className="relative overflow-hidden bg-[#0a0a0b]">
+      <section className="relative z-10 overflow-hidden bg-[#0a0a0b]">
         {/* The hero IS the image — the gold drips are built into its bottom edge */}
         <img
-          src="/b-good-spouting-hero-image.png"
+          src="/b-good-spouting-hero-image-soft-clouds-preview.png"
           alt="Luxury stone home with copper gutters and downspouts installed by B. Good Spouting"
           className="block w-full select-none"
         />
         {/* Legibility gradient over the dark left side */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/90 via-black/45 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/75 via-black/25 to-transparent" />
 
         {/* Headline only — keep the copper / gutter photo and the drips fully visible */}
         <div className="relative z-10 px-4 pb-12 pt-8 lg:absolute lg:inset-0 lg:flex lg:items-center lg:p-0">
@@ -526,7 +526,7 @@ export default function HomePage() {
       </section>
 
       {/* ===================== Protect feature strip ===================== */}
-      <section className="bg-[#141418]">
+      <section className="relative z-20 -mt-20 bg-gradient-to-b from-transparent via-[#141418] via-24% to-[#141418] pb-10 pt-16 sm:-mt-28 sm:pt-20 lg:-mt-36 lg:pb-14 lg:pt-24">
         <div className="container mx-auto grid items-stretch gap-0 px-0 lg:grid-cols-2">
           {/* Left: gutter / downspout photo with the mascot anchored on it */}
           <div
