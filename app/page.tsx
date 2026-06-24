@@ -514,11 +514,16 @@ export default function HomePage() {
 
       {/* ===================== Protect feature strip ===================== */}
       <section className="bg-[#141418]">
-        <div className="container mx-auto grid items-center gap-0 px-0 lg:grid-cols-2">
+        <div className="container mx-auto grid items-stretch gap-0 px-0 lg:grid-cols-2">
+          {/* Left: gutter / downspout photo with the mascot anchored on it */}
           <div
-            className="h-64 w-full bg-cover bg-center lg:h-full lg:min-h-[440px]"
+            className="relative h-72 w-full bg-cover bg-center sm:h-96 lg:h-auto lg:min-h-[460px]"
             style={{ backgroundImage: "url(/gallery/green-downspout.jpg)" }}
-          />
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#141418]" />
+          </div>
+
+          {/* Right: why it matters */}
           <div className="px-4 py-12 lg:px-12 lg:py-16">
             <SectionEyebrow>Protect Your Home</SectionEyebrow>
             <h2 className="font-display mt-3 text-4xl leading-tight sm:text-5xl">
@@ -775,75 +780,74 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ===================== Contact / Estimate ===================== */}
-      <section id="contact" className="relative overflow-hidden bg-[#0a0a0b] py-16 sm:py-24">
-        {/* Gutter photo backdrop */}
+      {/* ===================== Closing estimate / contact ===================== */}
+      <section id="contact" className="relative overflow-hidden bg-[#141418] py-16 sm:py-24">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-25"
+          className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: "url(/gallery/corner-gutters.jpg)" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-black/85 to-black/70" />
         <div className="absolute inset-0 bg-grid-dark" />
 
         <div className="container relative z-10 mx-auto px-4">
-          <div className="mb-10 text-center">
-            <SectionEyebrow>Get In Touch</SectionEyebrow>
-            <h2 className="font-display mt-3 text-4xl sm:text-5xl">
-              REQUEST YOUR <span className="text-gold-gradient">FREE ESTIMATE</span>
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-zinc-300">
-              Ready to protect your home with professional gutters? Send us a few details and we&apos;ll get right back
-              to you.
-            </p>
-          </div>
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            {/* Left: pitch + contact details */}
+            <div>
+              <SectionEyebrow>Get In Touch</SectionEyebrow>
+              <h2 className="font-display mt-3 text-4xl leading-tight sm:text-5xl">
+                READY TO GET IT <span className="text-gold-gradient">DONE RIGHT?</span>
+              </h2>
+              <p className="mt-5 max-w-lg text-zinc-300">
+                Tell us about your project and we&apos;ll get you a fast, friendly, no-obligation estimate — usually
+                within one business day.
+              </p>
 
-          {/* Mascot + form card */}
-          <div className="relative mx-auto max-w-2xl">
-            {/* Mascot standing alongside the form (desktop) */}
-            <img
-              src="/spout-character-solo.png"
-              alt=""
-              aria-hidden="true"
-              className="pointer-events-none absolute -left-2 bottom-0 z-20 hidden h-[112%] -translate-x-[78%] drop-shadow-2xl lg:block"
-            />
+              <div className="mt-8 max-w-md space-y-4">
+                <a
+                  href={PHONE_HREF}
+                  className="flex items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-900/80 p-4 transition-colors hover:border-yellow-400/60"
+                >
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-yellow-400 text-black">
+                    <Phone className="h-6 w-6" />
+                  </span>
+                  <div>
+                    <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Call Us</p>
+                    <p className="font-condensed text-lg font-bold text-white">{PHONE_DISPLAY}</p>
+                  </div>
+                </a>
+                <a
+                  href={`mailto:${EMAIL}`}
+                  className="flex items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-900/80 p-4 transition-colors hover:border-yellow-400/60"
+                >
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-yellow-400 text-black">
+                    <Mail className="h-6 w-6" />
+                  </span>
+                  <div>
+                    <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Email Us</p>
+                    <p className="font-condensed text-lg font-bold text-white">{EMAIL}</p>
+                  </div>
+                </a>
+                <div className="flex items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-900/80 p-4">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-yellow-400 text-black">
+                    <Clock className="h-6 w-6" />
+                  </span>
+                  <div>
+                    <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Hours</p>
+                    <p className="font-condensed text-lg font-bold text-white">Mon–Fri: 7AM–6PM</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-            <EstimateForm form={form} setForm={setForm} onSubmit={handleSubmit} className="relative z-10" />
-          </div>
-
-          {/* Contact info row */}
-          <div className="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
-            <a
-              href={PHONE_HREF}
-              className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/80 p-4 transition-colors hover:border-yellow-400/60"
-            >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-yellow-400 text-black">
-                <Phone className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Call Us</p>
-                <p className="font-condensed text-base font-bold text-white">{PHONE_DISPLAY}</p>
-              </div>
-            </a>
-            <a
-              href={`mailto:${EMAIL}`}
-              className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/80 p-4 transition-colors hover:border-yellow-400/60"
-            >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-yellow-400 text-black">
-                <Mail className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Email Us</p>
-                <p className="font-condensed text-sm font-bold text-white">{EMAIL}</p>
-              </div>
-            </a>
-            <div className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/80 p-4">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-yellow-400 text-black">
-                <Clock className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-condensed text-xs uppercase tracking-wide text-zinc-500">Hours</p>
-                <p className="font-condensed text-base font-bold text-white">Mon–Fri: 7AM–6PM</p>
-              </div>
+            {/* Right: the form, with the mascot leaning in from the left */}
+            <div className="relative">
+              <img
+                src="/spout-character-solo.png"
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute -left-2 bottom-0 z-20 hidden h-[112%] -translate-x-[78%] drop-shadow-2xl xl:block"
+              />
+              <EstimateForm form={form} setForm={setForm} onSubmit={handleSubmit} className="relative z-10" />
             </div>
           </div>
         </div>
